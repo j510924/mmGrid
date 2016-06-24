@@ -128,11 +128,22 @@
 
             if (opts.checkCol) {
                 var chkHtml = opts.multiSelect ? '<input type="checkbox" class="checkAll" >'
-                    : '<input type="checkbox" disabled="disabled" class="checkAll">';
+                    : '<input type="checkbox" disabled="disabled" class="checkAll">',
+                    name = $.type(opts.checkCol) === 'string' ? opts.checkCol : 'grid-check';
                 opts.cols.unshift({
                     title: chkHtml, width: 20, align: 'center', lockWidth: true, checkCol: true, renderer: function (val, item) {
 
                         return '<input type="checkbox" class="mmg-check" value="'+(opts.checkColName ? item[opts.checkColName] :'')+'" >';
+                    }
+                });
+            }
+
+            if(opts.radioCol){
+                var name = $.type(opts.radioCol) === 'string' ? opts.radioCol : 'grid-radio';
+
+                opts.cols.unshift({
+                    title: '', width: 20, align: 'center', lockWidth: true, checkCol: true, renderer: function (val, item) {
+                        return '<input type="radio" name="'+name+'" class="mmg-check" value="'+(opts.checkColName ? item[opts.checkColName] :'')+'" >';
                     }
                 });
             }
@@ -1133,7 +1144,7 @@
                 }
                 if (!$tr.hasClass('selected')) {
                     $tr.addClass('selected');
-                    if (opts.checkCol) {
+                    if (opts.checkCol || opts.radioCol) {
                         $tr.find('td .mmg-check').prop('checked', 'checked');
                     }
                 }
@@ -1378,8 +1389,9 @@
         , noDataText: '没有数据'
         , loadErrorText: '数据加载出现异常'
         , multiSelect: false
-        , checkCol: false,
-        checkColName:'' //checkbox对应value的字段名
+        , checkCol: false,//如果为string类型，则表示checkbox对应的name
+         checkColName:'', //checkbox对应value的字段名
+         radioCol:false //表格显示radio，如果为string类型，则表示radio对应的name。radioCol为真时，multiSelect必须为false
         , indexCol: false
         , indexColWidth: 30
         , fullWidthRows: true
