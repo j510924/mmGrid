@@ -130,8 +130,9 @@
                 var chkHtml = opts.multiSelect ? '<input type="checkbox" class="checkAll" >'
                     : '<input type="checkbox" disabled="disabled" class="checkAll">';
                 opts.cols.unshift({
-                    title: chkHtml, width: 20, align: 'center', lockWidth: true, checkCol: true, renderer: function () {
-                        return '<input type="checkbox" class="mmg-check">';
+                    title: chkHtml, width: 20, align: 'center', lockWidth: true, checkCol: true, renderer: function (val, item) {
+
+                        return '<input type="checkbox" class="mmg-check" value="'+(opts.checkColName ? item[opts.checkColName] :'')+'" >';
                     }
                 });
             }
@@ -581,6 +582,8 @@
                 } else {
                     that.deselect($this.parent().index());
                 }
+
+                return false;
             });
 
             $body.on('click', 'tr > td .mmg-check', function (e) {
@@ -612,9 +615,6 @@
                     $(this).toggleClass('hover');
                 });
             }
-            ;
-
-
         }
 
         , _rowHtml: function (item, rowIndex) {
@@ -1028,6 +1028,7 @@
             });
 
         }
+
         , _loadNative: function (args) {
             this._populate(args);
             this._refreshSortStatus();
@@ -1377,7 +1378,8 @@
         , noDataText: '没有数据'
         , loadErrorText: '数据加载出现异常'
         , multiSelect: false
-        , checkCol: false
+        , checkCol: false,
+        checkColName:'' //checkbox对应value的字段名
         , indexCol: false
         , indexColWidth: 30
         , fullWidthRows: true
