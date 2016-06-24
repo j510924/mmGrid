@@ -2,7 +2,8 @@
  * Author: meimeidev
  */
 
-!function ($) {
+!(function ($) {
+    'use strict';
     var MMGrid = function (element, options) {
         this._id = (((1 + Math.random()) * 0x10000) | 0).toString(16);
         this._loadCount = 0;
@@ -47,12 +48,12 @@
         var isIE6 = isIE && !window.XMLHttpRequest;
 
         return {
-            isIE: isIE
-            , isIE6: isIE6
-            , isIE7: isIE7
-            , isIE8: isIE8
-            , isIE9: isIE9
-            , isIE10: isIE10
+            isIE: isIE,
+            isIE6: isIE6,
+            isIE7: isIE7,
+            isIE8: isIE8,
+            isIE9: isIE9,
+            isIE10: isIE10
         };
     }();
 
@@ -90,7 +91,6 @@
                 $el.prop('cellspacing', 0);
             }
 
-
             //cached object
             var $mmGrid = $(mmGrid.join(''));
             this.$mmGrid = $mmGrid;
@@ -103,14 +103,12 @@
             this._insertEmptyRow();
             this.$body.appendTo(this.$bodyWrapper);
 
-
             //放回原位置
-            if (elIndex === 0 || $elParent.children().length == 0) {
+            if (elIndex === 0 || $elParent.children().length === 0) {
                 $elParent.prepend(this.$mmGrid);
             } else {
                 $elParent.children().eq(elIndex - 1).after(this.$mmGrid);
             }
-
 
             // fix in ie6
             if (browser.isIE6 && (!opts.width || opts.width === 'auto')) {
@@ -126,24 +124,35 @@
                 $mmGrid.height(opts.height);
             }
 
-            if (opts.checkCol) {
-                var chkHtml = opts.multiSelect ? '<input type="checkbox" class="checkAll" >'
-                    : '<input type="checkbox" disabled="disabled" class="checkAll">',
-                    name = $.type(opts.checkCol) === 'string' ? opts.checkCol : 'grid-check';
-                opts.cols.unshift({
-                    title: chkHtml, width: 20, align: 'center', lockWidth: true, checkCol: true, renderer: function (val, item) {
+            var name = '';
 
-                        return '<input type="checkbox" class="mmg-check" value="'+(opts.checkColName ? item[opts.checkColName] :'')+'" >';
+            if (opts.checkCol) {
+                var chkHtml = opts.multiSelect ? '<input type="checkbox" class="checkAll" >' : '<input type="checkbox" disabled="disabled" class="checkAll">';
+                name = $.type(opts.checkCol) === 'string' ? opts.checkCol : 'grid-check';
+                opts.cols.unshift({
+                    title: chkHtml,
+                    width: 20,
+                    align: 'center',
+                    lockWidth: true,
+                    checkCol: true,
+                    renderer: function (val, item) {
+
+                        return '<input type="checkbox" class="mmg-check" value="' + (opts.checkColName ? item[opts.checkColName] : '') + '" >';
                     }
                 });
             }
 
-            if(opts.radioCol){
-                var name = $.type(opts.radioCol) === 'string' ? opts.radioCol : 'grid-radio';
+            if (opts.radioCol) {
+                name = $.type(opts.radioCol) === 'string' ? opts.radioCol : 'grid-radio';
 
                 opts.cols.unshift({
-                    title: '', width: 20, align: 'center', lockWidth: true, checkCol: true, renderer: function (val, item) {
-                        return '<input type="radio" name="'+name+'" class="mmg-check" value="'+(opts.checkColName ? item[opts.checkColName] :'')+'" >';
+                    title: '',
+                    width: 20,
+                    align: 'center',
+                    lockWidth: true,
+                    checkCol: true,
+                    renderer: function (val, item) {
+                        return '<input type="radio" name="' + name + '" class="mmg-check" value="' + (opts.checkColName ? item[opts.checkColName] : '') + '" >';
                     }
                 });
             }
@@ -161,9 +170,8 @@
                 });
             }
 
-        }
-
-        , _expandCols: function (cols) {
+        },
+        _expandCols: function (cols) {
             var newCols = [];
             if (!cols) {
                 return newCols;
@@ -178,8 +186,8 @@
                 }
             }
             return newCols;
-        }
-        , _leafCols: function () {
+        },
+        _leafCols: function () {
             var opts = this.opts;
             var newCols = [];
             var cols = this._expandCols(opts.cols);
@@ -190,24 +198,20 @@
                 }
             }
             return newCols;
-        }
-
-        , _expandThs: function () {
+        },
+        _expandThs: function () {
             return this.$head.find('th').sort(function (a, b) {
                 return parseInt($(a).data('colindex')) - parseInt($(b).data('colindex'));
             });
-        }
-
-        , _leafThs: function () {
+        },
+        _leafThs: function () {
             return this.$head.find('th').filter(function () {
                 return !$.data(this, 'col').cols;
             }).sort(function (a, b) {
                 return parseInt($(a).data('colindex')) - parseInt($(b).data('colindex'));
             });
-        }
-
-
-        , _colsWithTitleDeep: function (cols, deep) {
+        },
+        _colsWithTitleDeep: function (cols, deep) {
             var newCols = [];
             if (!cols) {
                 return newCols;
@@ -221,9 +225,8 @@
                 }
             }
             return newCols;
-        }
-
-        , _titleDeep: function (cols) {
+        },
+        _titleDeep: function (cols) {
             var deep = 1;
             for (var colIndex = 0; colIndex < cols.length; colIndex++) {
                 var col = cols[colIndex];
@@ -235,15 +238,15 @@
                 }
             }
             return deep;
-        }
-
-        , _titleHtml: function (col, rowspan) {
-            var opts = this.opts;
+        },
+        _titleHtml: function (col, rowspan) {
+            var opts = this.opts,
+                colIndex;
 
             var titleHtml = [];
             if (!col.cols) {
                 titleHtml.push('<th class="');
-                var colIndex = $.inArray(col, this._expandCols(opts.cols));
+                colIndex = $.inArray(col, this._expandCols(opts.cols));
                 titleHtml.push(this._genColClass(colIndex));
                 titleHtml.push(' " ');
                 titleHtml.push(' rowspan="');
@@ -255,7 +258,9 @@
                 titleHtml.push('" >');
                 titleHtml.push('<div class="mmg-titleWrapper" >');
                 titleHtml.push('<span class="mmg-title ');
-                if (col.sortable) titleHtml.push('mmg-canSort ');
+                if (col.sortable) {
+                    titleHtml.push('mmg-canSort ');
+                }
                 titleHtml.push('">');
                 if (col.titleHtml) {
                     titleHtml.push(col.titleHtml);
@@ -263,7 +268,9 @@
                     titleHtml.push(col.title);
                 }
                 titleHtml.push('</span><div class="mmg-sort"></div>');
-                if (!col.lockWidth) titleHtml.push('<div class="mmg-colResize"></div>');
+                if (!col.lockWidth) {
+                    titleHtml.push('<div class="mmg-colResize"></div>');
+                }
                 titleHtml.push('</div></th>');
             } else {
                 var displayColsLength = col.cols.length;
@@ -276,7 +283,7 @@
                     col.hidden = true;
                 }
                 titleHtml.push('<th class="');
-                var colIndex = $.inArray(col, this._expandCols(opts.cols));
+                colIndex = $.inArray(col, this._expandCols(opts.cols));
                 titleHtml.push(this._genColClass(colIndex));
                 titleHtml.push(' mmg-groupCol" ');
                 titleHtml.push(' rowspan="');
@@ -288,7 +295,9 @@
                 titleHtml.push('" >');
                 titleHtml.push('<div class="mmg-titleWrapper" >');
                 titleHtml.push('<span class="mmg-title ');
-                if (col.sortable) titleHtml.push('mmg-canSort ');
+                if (col.sortable) {
+                    titleHtml.push('mmg-canSort ');
+                }
                 titleHtml.push('">');
                 if (col.titleHtml) {
                     titleHtml.push(col.titleHtml);
@@ -299,13 +308,13 @@
                 titleHtml.push('</div></th>');
             }
 
-            return titleHtml.join("");
-        }
-
-        , _initHead: function () {
+            return titleHtml.join('');
+        },
+        _initHead: function () {
             var that = this;
             var opts = this.opts;
-            var $head = this.$head;
+            var $head = this.$head,
+                colIndex, col;
 
             if (opts.cols) {
                 var theadHtmls = ['<thead>'];
@@ -315,8 +324,8 @@
                 for (var deep = 1; deep <= titleDeep; deep++) {
                     var cols = that._colsWithTitleDeep(opts.cols, deep);
                     theadHtmls.push('<tr>');
-                    for (var colIndex = 0; colIndex < cols.length; colIndex++) {
-                        var col = cols[colIndex];
+                    for (colIndex = 0; colIndex < cols.length; colIndex++) {
+                        col = cols[colIndex];
                         theadHtmls.push(this._titleHtml(col, titleDeep - deep + 1));
                     }
                     theadHtmls.push('</tr>');
@@ -342,11 +351,10 @@
                 $bodyWrapper.height($mmGrid.height() - $headWrapper.outerHeight(true));
             }
 
-
             //初始化排序状态
             if (opts.sortName) {
-                for (var colIndex = 0; colIndex < expandCols.length; colIndex++) {
-                    var col = expandCols[colIndex];
+                for (colIndex = 0; colIndex < expandCols.length; colIndex++) {
+                    col = expandCols[colIndex];
                     if (col.sortName === opts.sortName || col.name === opts.sortName) {
                         var $th = $ths.eq(colIndex);
                         $.data($th.find('.mmg-title')[0], 'sortStatus', opts.sortStatus);
@@ -354,10 +362,8 @@
                     }
                 }
             }
-        }
-
-        , _initOptions: function () {
-            var opts = this.opts;
+        },
+        _initOptions: function () {
             var $mmGrid = this.$mmGrid;
             var $headWrapper = this.$headWrapper;
             var $backboard = this.$backboard;
@@ -375,8 +381,13 @@
                     }
                     var col = cols[colIndex];
                     bbHtml.push('><input type="checkbox"  ');
-                    if (!col.hidden) bbHtml.push('checked="checked"');
-                    if (col.lockDisplay) bbHtml.push(' disabled="disabled"');
+                    if (!col.hidden) {
+                        bbHtml.push('checked="checked"');
+                    }
+
+                    if (col.lockDisplay) {
+                        bbHtml.push(' disabled="disabled"');
+                    }
                     bbHtml.push('/><span>');
                     if (col.title) {
                         bbHtml.push(col.title);
@@ -388,9 +399,8 @@
                 }
                 $backboard.append($(bbHtml.join('')));
             }
-        }
-
-        , _initEvents: function () {
+        },
+        _initEvents: function () {
             var that = this;
             var opts = this.opts;
             var $mmGrid = this.$mmGrid;
@@ -400,7 +410,6 @@
             var $body = this.$body;
             var $backboard = this.$backboard;
             var $ths = this._expandThs();
-            var expandCols = this._expandCols(opts.cols);
             var leafCols = this._leafCols();
 
             //调整浏览器
@@ -456,60 +465,61 @@
             });
 
             //隐藏列
-            $backboard.on('click', 'input:checkbox', function (event) {
-               if($backboard.is(':visible')){
-                   var index = $backboard.find('label').index($(this).parent());
-                   //最后一个不隐藏
-                   var last = 1;
-                   if (opts.checkCol) {
-                       last = last + 1;
-                   }
-                   if (opts.indexCol) {
-                       last = last + 1;
-                   }
-                   if ($backboard.find('label :checked').length < last) {
-                       this.checked = true;
-                       return;
-                   }
+            $backboard.on('click', 'input:checkbox', function () {
+                if ($backboard.is(':visible')) {
+                    var index = $backboard.find('label').index($(this).parent());
+                    //最后一个不隐藏
+                    var last = 1;
+                    if (opts.checkCol) {
+                        last = last + 1;
+                    }
+                    if (opts.indexCol) {
+                        last = last + 1;
+                    }
+                    if ($backboard.find('label :checked').length < last) {
+                        this.checked = true;
+                        return;
+                    }
 
-                   var col = leafCols[index];
-                   if (this.checked) {
-                       col.hidden = false;
+                    var col = leafCols[index];
+                    if (this.checked) {
+                        col.hidden = false;
 
-                   } else {
-                       col.hidden = true;
-                   }
+                    } else {
+                        col.hidden = true;
+                    }
 
-                   var $ths = $head.find('th');
-                   for (var colIndex = $ths.length - 1; colIndex >= 0; colIndex--) {
-                       var $th = $ths.eq(colIndex);
-                       var iCol = $th.data('col');
-                       if (iCol.cols) {
-                           var hidden = true;
-                           var colspan = 0;
-                           $.each(iCol.cols, function (index, item) {
-                               if (!item.hidden) {
-                                   hidden = false;
-                                   colspan++;
-                               }
-                           });
-                           //IE bug
-                           if (colspan !== 0) {
-                               $th.prop('colspan', colspan);
-                           }
-                           iCol.hidden = hidden;
-                       }
-                   }
+                    var $ths = $head.find('th');
+                    for (var colIndex = $ths.length - 1; colIndex >= 0; colIndex--) {
+                        var $th = $ths.eq(colIndex);
+                        var iCol = $th.data('col');
+                        if (iCol.cols) {
+                            var hidden = true;
+                            var colspan = 0;
+                            $.each(iCol.cols, function (index, item) {
+                                if (!item.hidden) {
+                                    hidden = false;
+                                    colspan++;
+                                }
+                            });
+                            //IE bug
+                            if (colspan !== 0) {
+                                $th.prop('colspan', colspan);
+                            }
+                            iCol.hidden = hidden;
+                        }
+                    }
 
-                   that._setColsWidth();
-                   $backboard.height($mmGrid.height() - $headWrapper.outerHeight(true));
-                   if (opts.height !== 'auto') {
-                       $bodyWrapper.height($mmGrid.height() - $headWrapper.outerHeight(true));
-                   }
-                   $mmGrid.find('a.mmg-btnBackboardDn').css({
-                       'top': $headWrapper.outerHeight(true)
-                   })
-               }
+                    that._setColsWidth();
+                    $backboard.height($mmGrid.height() - $headWrapper.outerHeight(true));
+                    if (opts.height !== 'auto') {
+                        $bodyWrapper.height($mmGrid.height() - $headWrapper.outerHeight(true));
+                    }
+
+                    $mmGrid.find('a.mmg-btnBackboardDn').css({
+                        'top': $headWrapper.outerHeight(true)
+                    });
+                }
             });
 
             //排序事件
@@ -534,7 +544,7 @@
                 $this.siblings('.mmg-sort').addClass('mmg-' + sortStatus);
 
                 if (opts.url && opts.remoteSort) {
-                    that.load()
+                    that.load();
                 } else {
                     that._nativeSorter($.inArray(col, leafCols), sortStatus);
                     that._setStyle();
@@ -550,8 +560,7 @@
                 var $colResizePointerBefore = $mmGrid.find('.mmg-colResizePointer-before')
                     .css('left', $resize.parent().parent().position().left + scrollLeft).show();
                 //取消文字选择
-                document.selection && document.selection.empty && ( document.selection.empty(), 1)
-                || window.getSelection && window.getSelection().removeAllRanges();
+                document.selection && document.selection.empty && (document.selection.empty(), 1) || window.getSelection && window.getSelection().removeAllRanges();
                 document.body.onselectstart = function () {
                     return false;
                 };
@@ -571,17 +580,17 @@
                     $colResizePointer.hide();
                     $colResizePointerBefore.hide();
                     document.body.onselectstart = function () {
-                        return true;//开启文字选择
+                        return true; //开启文字选择
                     };
                     $headWrapper.css('-moz-user-select', 'text');
                 });
             });
 
             //选中事件
-            var $body = this.$body;
+            $body = this.$body;
             $body.on('click', 'td', function (e) {
                 var $this = $(this);
-                var event = jQuery.Event("cellSelected");
+                var event = $.Event('cellSelected');
                 event.target = e.target;
                 that.$body.triggerHandler(event, [$.data($this.parent()[0], 'item'), $this.parent().index(), $this.index()]);
 
@@ -626,13 +635,11 @@
                     $(this).toggleClass('hover');
                 });
             }
-        }
-
-        , _rowHtml: function (item, rowIndex) {
+        },
+        _rowHtml: function (item, rowIndex) {
             var opts = this.opts;
             var expandCols = this._expandCols(opts.cols);
             var leafCols = this._leafCols();
-
 
             if ($.isPlainObject(item)) {
                 var trHtml = [];
@@ -658,7 +665,6 @@
 
                     trHtml.push('</span></td>');
                 }
-                ;
                 trHtml.push('</tr>');
                 return trHtml.join('');
             }
@@ -678,12 +684,16 @@
 
                     opts.nowrap && (cls += ' nowrap');
 
-                    var $td = $('<td></td>', {'class': cls});
+                    var $td = $('<td></td>', {
+                        'class': cls
+                    });
 
                     cls = '';
                     opts.nowrap && (cls += ' nowrap');
 
-                    var $span = $('<span></span>', {'class': cls});
+                    var $span = $('<span></span>', {
+                        'class': cls
+                    });
 
                     $span.html(col.renderer ? col.renderer(item[col.name], item, rowIndex) : item[col.name]);
 
@@ -694,8 +704,8 @@
 
                 return $tr;
             }
-        }
-        , _populate: function (items) {
+        },
+        _populate: function (items) {
             var opts = this.opts;
             var $body = this.$body;
 
@@ -723,22 +733,20 @@
             if (opts.fullWidthRows && this._loadCount <= 1) {
                 this._fullWidthRows();
             }
-        }
-        , _insertEmptyRow: function () {
+        },
+        _insertEmptyRow: function () {
             var $body = this.$body;
             $body.empty().html('<tbody><tr class="emptyRow"><td  style="border: 0px;background: none;">&nbsp;</td></tr></tbody>');
-        }
-        , _removeEmptyRow: function () {
+        },
+        _removeEmptyRow: function () {
             var $body = this.$body;
             $body.find('tr.emptyRow').remove();
-        }
-
+        },
         /* 生成列类 */
-        , _genColClass: function (colIndex) {
+        _genColClass: function (colIndex) {
             return 'mmg' + this._id + '-col' + colIndex;
-        }
-
-        , _setStyle: function () {
+        },
+        _setStyle: function () {
             var $head = this.$head;
             var $ths = this._expandThs();
             var $body = this.$body;
@@ -753,7 +761,6 @@
 
             $body.find('tr:odd').addClass('even');
 
-
             var sortIndex = $.inArray($head.find('.mmg-title').filter(function () {
                 return $.data(this, 'sortStatus') === 'asc' || $(this).data('sortStatus') === 'desc';
             }).parent().parent().data('col'), leafCol);
@@ -762,9 +769,8 @@
                 .filter(':odd').addClass('colSelectedEven');
 
             this._resizeHeight();
-
-        }
-        , _setColsWidth: function () {
+        },
+        _setColsWidth: function () {
             var opts = this.opts;
             var $style = this.$style;
             var $head = this.$head;
@@ -801,7 +807,7 @@
             try {
                 $style.text(styleText.join(''));
             } catch (error) {
-                $style[0].styleSheet.cssText = styleText.join('');//IE fix
+                $style[0].styleSheet.cssText = styleText.join(''); //IE fix
             }
             $body.width($head.width());
             $bodyWrapper.width('100%');
@@ -815,12 +821,12 @@
             }
 
             $bodyWrapper.scrollTop(scrollTop);
-        }
-        , _fullWidthRows: function () {
-            var opts = this.opts;
+        },
+        _fullWidthRows: function () {
             var $bodyWrapper = this.$bodyWrapper;
             var $mmGrid = this.$mmGrid;
-            var $head = this.$head;
+            var $head = this.$head,
+                $th, i;
             var scrollWidth = $bodyWrapper.width() - $bodyWrapper[0].clientWidth;
 
             if (scrollWidth && browser.isIE) {
@@ -835,9 +841,10 @@
             var thsArr = [];
             var $ths = this._leafThs();
             var leafCol = this._leafCols();
-            for (var i = 0; i < leafCol.length; i++) {
+            var maxColWidth;
+            for (i = 0; i < leafCol.length; i++) {
                 var col = leafCol[i];
-                var $th = $ths.eq(i);
+                $th = $ths.eq(i);
                 if (!col.lockWidth && $th.is(':visible')) {
                     thsArr.push($th);
                 }
@@ -845,25 +852,23 @@
 
             var increaseWidth = Math.floor(fitWidth / thsArr.length);
             var maxColWidthIndex = 0;
-            for (var i = 0; i < thsArr.length; i++) {
-                var $th = thsArr[i];
+            for (i = 0; i < thsArr.length; i++) {
+                $th = thsArr[i];
                 var colWidth = $.data($th[0], 'col-width') + increaseWidth;
                 $.data($th[0], 'col-width', colWidth);
 
-                var maxColWidth = $.data(thsArr[maxColWidthIndex][0], 'col-width');
+                maxColWidth = $.data(thsArr[maxColWidthIndex][0], 'col-width');
                 if (maxColWidth < colWidth) {
                     maxColWidthIndex = i;
                 }
             }
 
             var remainWidth = fitWidth - increaseWidth * thsArr.length;
-            var maxColWidth = $.data(thsArr[maxColWidthIndex][0], 'col-width');
+            maxColWidth = $.data(thsArr[maxColWidthIndex][0], 'col-width');
             $.data(thsArr[maxColWidthIndex][0], 'col-width', maxColWidth + remainWidth);
             this._setColsWidth();
-        }
-
-
-        , _showLoading: function () {
+        },
+        _showLoading: function () {
             var $mmGrid = this.$mmGrid;
             $mmGrid.find('.mmg-mask').show();
 
@@ -872,21 +877,19 @@
                 'left': ($mmGrid.width() - $loading.width()) / 2,
                 'top': ($mmGrid.height() - $loading.height()) / 2
             }).show();
-        }
-        , _hideLoading: function () {
+        },
+        _hideLoading: function () {
             var $mmGrid = this.$mmGrid;
             $mmGrid.find('.mmg-mask').hide();
             $mmGrid.find('.mmg-loading').hide();
-        }
-        , _showNoData: function () {
+        },
+        _showNoData: function () {
             this._showMessage(this.opts.noDataText);
-        }
-
-        , _showLoadError: function () {
+        },
+        _showLoadError: function () {
             this._showMessage(this.opts.loadErrorText);
-        }
-
-        , _showMessage: function (msg) {
+        },
+        _showMessage: function (msg) {
             var $mmGrid = this.$mmGrid;
             var $headWrapper = this.$headWrapper;
             var $message = $mmGrid.find('.mmg-message');
@@ -894,13 +897,12 @@
                 'left': ($mmGrid.width() - $message.width()) / 2,
                 'top': ($mmGrid.height() + $headWrapper.height() - $message.height()) / 2
             }).text(msg).show();
-        }
-        , _hideMessage: function () {
+        },
+        _hideMessage: function () {
             var $mmGrid = this.$mmGrid;
             $mmGrid.find('.mmg-message').hide();
-        }
-
-        , _nativeSorter: function (colIndex, sortStatus) {
+        },
+        _nativeSorter: function (colIndex, sortStatus) {
             var leafCols = this._leafCols();
             var col = leafCols[colIndex];
 
@@ -920,9 +922,8 @@
                 }, function () {
                     return this.parentNode;
                 });
-        }
-
-        , _refreshSortStatus: function () {
+        },
+        _refreshSortStatus: function () {
             var $ths = this.$head.find('th');
             var sortColIndex = -1;
             var sortStatus = '';
@@ -933,13 +934,13 @@
                     sortStatus = status;
                 }
             });
-            var sortStatus = sortStatus === 'desc' ? 'asc' : 'desc';
+
+            sortStatus = sortStatus === 'desc' ? 'asc' : 'desc';
             if (sortColIndex >= 0) {
                 $ths.eq(sortColIndex).find('.mmg-title').data('sortStatus', sortStatus).click();
             }
-        }
-
-        , _loadAjax: function (args) {
+        },
+        _loadAjax: function (args) {
             var that = this;
             var opts = this.opts;
             var params = {};
@@ -971,7 +972,6 @@
                     params.sort = sortName + '.' + sortStatus;
                 }
             }
-
 
             //插件参数合并
             var pluginParams = {};
@@ -1038,14 +1038,13 @@
                 that.$body.triggerHandler('loadError', data);
             });
 
-        }
-
-        , _loadNative: function (args) {
+        },
+        _loadNative: function (args) {
             this._populate(args);
             this._refreshSortStatus();
             this.$body.triggerHandler('loadSuccess', args);
-        }
-        , load: function (args) {
+        },
+        load: function (args) {
             try {
                 var opts = this.opts;
                 this._hideMessage();
@@ -1065,10 +1064,9 @@
                 this._showLoadError();
                 throw e;
             }
-        }
-
+        },
         //重设尺寸
-        , resize: function () {
+        resize: function () {
             var opts = this.opts;
             var $mmGrid = this.$mmGrid;
             var $headWrapper = this.$headWrapper;
@@ -1108,15 +1106,14 @@
                 $loadingWrapper.css({
                     'left': ($mmGrid.width() - $loadingWrapper.width()) / 2,
                     'top': ($mmGrid.height() - $loadingWrapper.height()) / 2
-                })
+                });
             }
 
             $bodyWrapper.trigger('scroll');
 
             this._resizeHeight();
-        }
-
-        , _resizeHeight: function () {
+        },
+        _resizeHeight: function () {
             var opts = this.opts;
             var $bodyWrapper = this.$bodyWrapper;
             var $body = this.$body;
@@ -1126,10 +1123,9 @@
                     $bodyWrapper.height($bodyWrapper.height() + $bodyWrapper.height() - $bodyWrapper[0].clientHeight + 1);
                 }
             }
-        }
-
+        },
         //选中
-        , select: function (args) {
+        select: function (args) {
             var opts = this.opts;
             var $body = this.$body;
             var $head = this.$head;
@@ -1175,10 +1171,9 @@
                 }
             }
 
-
-        }
+        },
         //取消选中
-        , deselect: function (args) {
+        deselect: function (args) {
             var opts = this.opts;
             var $body = this.$body;
             var $head = this.$head;
@@ -1206,37 +1201,33 @@
             }
 
             $head.find('th .checkAll').prop('checked', '');
-
-        }
-        , selectedRows: function () {
+        },
+        selectedRows: function () {
             var $body = this.$body;
             var selected = [];
             $.each($body.find('tr.selected'), function (index, item) {
                 selected.push($.data(this, 'item'));
             });
             return selected;
-        }
-
-        , selectedRowsIndex: function () {
+        },
+        selectedRowsIndex: function () {
             var $body = this.$body;
-            var $trs = this.$body.find('tr')
+            var $trs = this.$body.find('tr');
             var selected = [];
             $.each($body.find('tr.selected'), function (index) {
                 selected.push($trs.index(this));
             });
             return selected;
-        }
-
-        , rows: function () {
+        },
+        rows: function () {
             var $body = this.$body;
             var items = [];
             $.each($body.find('tr'), function () {
                 items.push($.data(this, 'item'));
             });
             return items;
-        }
-
-        , row: function (index) {
+        },
+        row: function (index) {
             var $body = this.$body;
             if (index !== undefined && index >= 0) {
                 var $tr = $body.find('tr').eq(index);
@@ -1244,19 +1235,17 @@
                     return $.data($tr[0], 'item');
                 }
             }
-        }
-
-        , rowsLength: function () {
+        },
+        rowsLength: function () {
             var $body = this.$body;
             var length = $body.find('tr').length;
             if (length === 1 && $body.find('tr.emptyRow').length === 1) {
                 return 0;
             }
             return length;
-        }
-
+        },
         //添加数据，第一个参数可以为数组
-        , addRow: function (item, index) {
+        addRow: function (item, index) {
             var $tbody = this.$body.find('tbody');
 
             if ($.isArray(item)) {
@@ -1295,11 +1284,10 @@
             $tr.data('item', item);
             this._setStyle();
 
-
             this.$body.triggerHandler('rowInserted', [item, index]);
-        }
+        },
         //更新行内容，两个参数都必填
-        , updateRow: function (item, index) {
+        updateRow: function (item, index) {
             var opts = this.opts;
             var $tbody = this.$body.find('tbody');
             if (!$.isPlainObject(item)) {
@@ -1318,15 +1306,14 @@
             this._setStyle();
 
             this.$body.triggerHandler('rowUpdated', [oldItem, item, index]);
-        }
-
+        },
         //删除行，参数可以为索引数组
-        , removeRow: function (index) {
+        removeRow: function (index) {
             var that = this;
-            var $tbody = that.$body.find('tbody');
+            var $tbody = that.$body.find('tbody'), i;
 
             if ($.isArray(index)) {
-                for (var i = index.length - 1; i >= 0; i--) {
+                for (i = index.length - 1; i >= 0; i--) {
                     that.removeRow(index[i]);
                 }
                 return;
@@ -1334,7 +1321,7 @@
 
             if (index === undefined) {
                 var $trs = $tbody.find('tr');
-                for (var i = $trs.length - 1; i >= 0; i--) {
+                for (i = $trs.length - 1; i >= 0; i--) {
                     that.removeRow(i);
                 }
             } else {
@@ -1351,10 +1338,12 @@
     };
 
     $.fn.mmGrid = function () {
+        var data;
         if (arguments.length === 0 || typeof arguments[0] === 'object') {
-            var option = arguments[0]
-                , data = this.data('mmGrid')
-                , options = $.extend(true, {}, $.fn.mmGrid.defaults, option);
+            var option = arguments[0],
+                options = $.extend(true, {}, $.fn.mmGrid.defaults, option);
+
+            data = this.data('mmGrid');
             if (!data) {
                 data = new MMGrid(this, options);
                 this.data('mmGrid', data);
@@ -1362,7 +1351,7 @@
             return $.extend(true, this, data);
         }
         if (typeof arguments[0] === 'string') {
-            var data = this.data('mmGrid');
+            data = this.data('mmGrid');
             var fn = data[arguments[0]];
             if (fn) {
                 var args = Array.prototype.slice.call(arguments);
@@ -1372,44 +1361,42 @@
     };
 
     $.fn.mmGrid.defaults = {
-        width: 'auto'
-        , height: '280px'
-        , cols: []
-        , url: false
-        , params: {}
-        , method: 'POST'
-        , cache: false
-        , root: 'items' //最多支持二级结构，用'.'号分隔 。数据类似于{data:{list:[{}]}}, 则可配置成'data.list'
-        , items: []
-        , autoLoad: true
-        , remoteSort: false
-        , sortName: ''
-        , sortStatus: 'asc'
-        , loadingText: '正在载入...'
-        , noDataText: '没有数据'
-        , loadErrorText: '数据加载出现异常'
-        , multiSelect: false
-        , checkCol: false,//如果为string类型，则表示checkbox对应的name
-         checkColName:'', //checkbox对应value的字段名
-         radioCol:false //表格显示radio，如果为string类型，则表示radio对应的name。radioCol为真时，multiSelect必须为false
-        , indexCol: false
-        , indexColWidth: 30
-        , fullWidthRows: true
-        , nowrap: false
-        , showBackboard: true
-        , backboardMinHeight: 125,
+        width: 'auto',
+        height: '280px',
+        cols: [],
+        url: false,
+        params: {},
+        method: 'POST',
+        cache: false,
+        root: 'items', //最多支持二级结构，用'.'号分隔 。数据类似于{data:{list:[{}]}}, 则可配置成'data.list'
+        items: [],
+        autoLoad: true,
+        remoteSort: false,
+        sortName: '',
+        sortStatus: 'asc',
+        loadingText: '正在载入...',
+        noDataText: '没有数据',
+        loadErrorText: '数据加载出现异常',
+        multiSelect: false,
+        checkCol: false, //如果为string类型，则表示checkbox对应的name
+        checkColName: '', //checkbox对应value的字段名
+        radioCol: false, //表格显示radio，如果为string类型，则表示radio对应的name。radioCol为真时，multiSelect必须为false
+        indexCol: false,
+        indexColWidth: 30,
+        fullWidthRows: true,
+        nowrap: false,
+        showBackboard: true,
+        backboardMinHeight: 125,
         notify: function (content) {
             alert(content);
-        }
-        , plugins: [] //插件 插件必须实现 init($mmGrid)和params()方法，参考mmPaginator
+        },
+        plugins: [] //插件 插件必须实现 init($mmGrid)和params()方法，参考mmPaginator
     };
-//  event : loadSuccess(e,data), loadError(e, data), cellSelected(e, item, rowIndex, colIndex)
-//          rowInserted(e,item, rowIndex), rowUpdated(e, oldItem, newItem, rowIndex), rowRemoved(e,item, rowIndex)
-//
-
+    //  event : loadSuccess(e,data), loadError(e, data), cellSelected(e, item, rowIndex, colIndex)
+    //          rowInserted(e,item, rowIndex), rowUpdated(e, oldItem, newItem, rowIndex), rowRemoved(e,item, rowIndex)
+    //
 
     $.fn.mmGrid.Constructor = MMGrid;
-
 
     // see: http://james.padolsey.com/javascript/sorting-elements-with-jquery/
     $.fn.sortElements = (function () {
@@ -1428,7 +1415,7 @@
                 return function () {
                     if (parentNode === this) {
                         throw new Error(
-                            "You can't sort elements if any one is a descendant of another."
+                            'You can\'t sort elements if any one is a descendant of another.'
                         );
                     }
                     parentNode.insertBefore(this, nextSibling);
@@ -1440,4 +1427,4 @@
             });
         };
     })();
-}(window.jQuery);
+})(window.jQuery);
