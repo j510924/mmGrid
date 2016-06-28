@@ -401,16 +401,16 @@
             }
         },
         _initEvents: function () {
-            var that = this;
-            var opts = this.opts;
-            var $mmGrid = this.$mmGrid;
-            var $headWrapper = this.$headWrapper;
-            var $head = this.$head;
-            var $bodyWrapper = this.$bodyWrapper;
-            var $body = this.$body;
-            var $backboard = this.$backboard;
-            var $ths = this._expandThs();
-            var leafCols = this._leafCols();
+            var that = this,
+                opts = that.opts,
+                $mmGrid = that.$mmGrid,
+                $headWrapper = that.$headWrapper,
+                $head = that.$head,
+                $bodyWrapper = that.$bodyWrapper,
+                $body = that.$body,
+                $backboard = that.$backboard,
+                $ths = that._expandThs(),
+                leafCols = that._leafCols();
 
             //调整浏览器
             if (opts.width === 'auto' || opts.height === 'auto' || (typeof opts.width === 'string' && opts.width.indexOf('%') === opts.width.length - 1) ||
@@ -502,6 +502,7 @@
                                     colspan++;
                                 }
                             });
+
                             //IE bug
                             if (colspan !== 0) {
                                 $th.prop('colspan', colspan);
@@ -597,12 +598,13 @@
                 if (event.isPropagationStopped()) {
                     return;
                 }
-                if (!$this.parent().hasClass('selected')) {
-                    that.select($this.parent().index());
-                } else {
-                    that.deselect($this.parent().index());
+                if (opts.tdClickEnable) {
+                    if (!$this.parent().hasClass('selected')) {
+                        that.select($this.parent().index());
+                    } else {
+                        that.deselect($this.parent().index());
+                    }
                 }
-
                 return false;
             });
 
@@ -1205,7 +1207,7 @@
         selectedRows: function () {
             var $body = this.$body;
             var selected = [];
-            $.each($body.find('tr.selected'), function (index, item) {
+            $.each($body.find('tr.selected'), function () {
                 selected.push($.data(this, 'item'));
             });
             return selected;
@@ -1214,7 +1216,7 @@
             var $body = this.$body;
             var $trs = this.$body.find('tr');
             var selected = [];
-            $.each($body.find('tr.selected'), function (index) {
+            $.each($body.find('tr.selected'), function () {
                 selected.push($trs.index(this));
             });
             return selected;
@@ -1327,12 +1329,12 @@
             } else {
                 var item = that.row(index);
                 $tbody.find('tr').eq(index).remove();
-                this.$body.triggerHandler('rowRemoved', [item, index]);
+                that.$body.triggerHandler('rowRemoved', [item, index]);
             }
-            this._setStyle();
-            if (this.rowsLength() === 0) {
-                this._showNoData();
-                this._insertEmptyRow();
+            that._setStyle();
+            if (that.rowsLength() === 0) {
+                that._showNoData();
+                that._insertEmptyRow();
             }
         }
     };
@@ -1382,6 +1384,7 @@
         checkColName: '', //checkbox对应value的字段名
         radioCol: false, //表格显示radio，如果为string类型，则表示radio对应的name。radioCol为真时，multiSelect必须为false
         indexCol: false,
+        tdClickEnable: false, //点击td是否选中整个tr
         indexColWidth: 30,
         fullWidthRows: true,
         nowrap: false,
@@ -1426,5 +1429,6 @@
                 placements[i].call(getSortable.call(this));
             });
         };
-    })();
+    })
+    ();
 })(window.jQuery);
