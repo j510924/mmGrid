@@ -426,7 +426,10 @@
             });
 
             //向下按钮
-            var $btnBackboardDn = $mmGrid.find('a.mmg-btnBackboardDn').on('click', function () {
+            var $btnBackboardDn = $mmGrid.find('a.mmg-btnBackboardDn').on('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+
                 var backboardHeight = $mmGrid.height() - $headWrapper.outerHeight(true);
                 if (opts.height === 'auto' && opts.backboardMinHeight !== 'auto' && backboardHeight < opts.backboardMinHeight) {
                     backboardHeight = opts.backboardMinHeight;
@@ -440,19 +443,25 @@
 
                 that._hideMessage();
             });
+
             $body.on('mouseenter', function () {
                 $btnBackboardDn.slideUp('fast');
             });
+
             $mmGrid.on('mouseleave', function () {
                 $btnBackboardDn.slideUp('fast');
             });
+
             $headWrapper.on('mouseenter', function () {
                 if ($backboard.is(':hidden') && opts.showBackboard) {
                     $btnBackboardDn.slideDown('fast');
                 }
             });
             //向上按钮
-            $mmGrid.find('a.mmg-btnBackboardUp').on('click', function () {
+            $mmGrid.find('a.mmg-btnBackboardUp').on('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+
                 $backboard.slideUp().queue(function (next) {
                     if (!that.rowsLength() || (that.rowsLength() === 1 && $body.find('tr.emptyRow').length === 1)) {
                         that._showNoData();
@@ -1379,7 +1388,7 @@
         loadingText: '正在载入...',
         noDataText: '没有数据',
         loadErrorText: '数据加载出现异常',
-        multiSelect: false,
+        multiSelect: true,
         checkCol: false, //如果为string类型，则表示checkbox对应的name
         checkColName: '', //checkbox对应value的字段名
         radioCol: false, //表格显示radio，如果为string类型，则表示radio对应的name。radioCol为真时，multiSelect必须为false
