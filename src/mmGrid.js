@@ -188,9 +188,10 @@
             return newCols;
         },
         _leafCols: function () {
-            var opts = this.opts;
-            var newCols = [];
-            var cols = this._expandCols(opts.cols);
+            var that = this,
+                opts = that.opts,
+                newCols = [],
+                cols = that._expandCols(opts.cols);
             for (var colIndex = 0; colIndex < cols.length; colIndex++) {
                 var col = cols[colIndex];
                 if (!col.cols) {
@@ -311,9 +312,9 @@
             return titleHtml.join('');
         },
         _initHead: function () {
-            var that = this;
-            var opts = this.opts;
-            var $head = this.$head,
+            var that = this,
+                opts = that.opts,
+                $head = that.$head,
                 colIndex, col;
 
             if (opts.cols) {
@@ -326,7 +327,7 @@
                     theadHtmls.push('<tr>');
                     for (colIndex = 0; colIndex < cols.length; colIndex++) {
                         col = cols[colIndex];
-                        theadHtmls.push(this._titleHtml(col, titleDeep - deep + 1));
+                        theadHtmls.push(that._titleHtml(col, titleDeep - deep + 1));
                     }
                     theadHtmls.push('</tr>');
                 }
@@ -334,8 +335,9 @@
                 $head.html(theadHtmls.join(''));
             }
 
-            var $ths = this._expandThs();
-            var expandCols = this._expandCols(opts.cols);
+            var $ths = that._expandThs(),
+                expandCols = that._expandCols(opts.cols);
+
             $.each($ths, function (index) {
                 if (!expandCols[index].width) {
                     expandCols[index].width = 100;
@@ -344,9 +346,9 @@
                 $.data(this, 'col', expandCols[index]);
             });
 
-            var $mmGrid = this.$mmGrid;
-            var $headWrapper = this.$headWrapper;
-            var $bodyWrapper = this.$bodyWrapper;
+            var $mmGrid = that.$mmGrid,
+                $headWrapper = that.$headWrapper,
+                $bodyWrapper = that.$bodyWrapper;
             if (opts.height !== 'auto') {
                 $bodyWrapper.height($mmGrid.height() - $headWrapper.outerHeight(true));
             }
@@ -364,14 +366,19 @@
             }
         },
         _initOptions: function () {
-            var $mmGrid = this.$mmGrid;
-            var $headWrapper = this.$headWrapper;
-            var $backboard = this.$backboard;
-            $mmGrid.find('a.mmg-btnBackboardDn').css({
-                'top': $headWrapper.outerHeight(true)
-            }).slideUp('fast');
+            var that = this,
+                $mmGrid = that.$mmGrid,
+                $headWrapper = that.$headWrapper,
+                $backboard = that.$backboard,
+                opts = that.opts;
 
-            var cols = this._leafCols();
+            if (opts.showChooseRows) {
+                $mmGrid.find('a.mmg-btnBackboardDn').css({
+                    'top': $headWrapper.outerHeight(true)
+                }).slideUp('fast');
+            }
+
+            var cols = that._leafCols();
             if (cols) {
                 var bbHtml = ['<h1>显示列</h1>'];
                 for (var colIndex = 0; colIndex < cols.length; colIndex++) {
@@ -389,11 +396,8 @@
                         bbHtml.push(' disabled="disabled"');
                     }
                     bbHtml.push('/><span>');
-                    if (col.title) {
-                        bbHtml.push(col.title);
-                    } else {
-                        bbHtml.push('未命名');
-                    }
+
+                    bbHtml.push(col.title ? col.title : '未命名');
 
                     bbHtml.push('</span></label>');
                 }
