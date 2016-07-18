@@ -425,113 +425,114 @@
                 $head.css('left', -$(this).scrollLeft());
             });
 
-            //向下按钮
-            var $btnBackboardDn = $mmGrid.find('a.mmg-btnBackboardDn').on('click', function (event) {
-                event.preventDefault();
-                event.stopPropagation();
+            if (opts.showChooseRows) {
+                //向下按钮
+                var $btnBackboardDn = $mmGrid.find('a.mmg-btnBackboardDn').on('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
 
-                var backboardHeight = $mmGrid.height() - $headWrapper.outerHeight(true);
-                if (opts.height === 'auto' && opts.backboardMinHeight !== 'auto' && backboardHeight < opts.backboardMinHeight) {
-                    backboardHeight = opts.backboardMinHeight;
-                }
-                $backboard.height(backboardHeight);
-                if (opts.height === 'auto') {
-                    $mmGrid.height($headWrapper.outerHeight(true) + $backboard.outerHeight(true));
-                }
-                $backboard.slideDown();
-                $btnBackboardDn.slideUp('fast');
-
-                that._hideMessage();
-            });
-
-            $body.on('mouseenter', function () {
-                $btnBackboardDn.slideUp('fast');
-            });
-
-            $mmGrid.on('mouseleave', function () {
-                $btnBackboardDn.slideUp('fast');
-            });
-
-            $headWrapper.on('mouseenter', function () {
-                if ($backboard.is(':hidden') && opts.showBackboard) {
-                    $btnBackboardDn.slideDown('fast');
-                }
-            });
-            //向上按钮
-            $mmGrid.find('a.mmg-btnBackboardUp').on('click', function (event) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                $backboard.slideUp().queue(function (next) {
-                    if (!that.rowsLength() || (that.rowsLength() === 1 && $body.find('tr.emptyRow').length === 1)) {
-                        that._showNoData();
+                    var backboardHeight = $mmGrid.height() - $headWrapper.outerHeight(true);
+                    if (opts.height === 'auto' && opts.backboardMinHeight !== 'auto' && backboardHeight < opts.backboardMinHeight) {
+                        backboardHeight = opts.backboardMinHeight;
                     }
+                    $backboard.height(backboardHeight);
                     if (opts.height === 'auto') {
-                        $mmGrid.height('auto');
+                        $mmGrid.height($headWrapper.outerHeight(true) + $backboard.outerHeight(true));
                     }
-                    next();
+                    $backboard.slideDown();
+                    $btnBackboardDn.slideUp('fast');
+
+                    that._hideMessage();
                 });
-            });
 
-            //隐藏列
-            $backboard.on('click', 'input:checkbox', function () {
-                if ($backboard.is(':visible')) {
-                    var index = $backboard.find('label').index($(this).parent());
-                    //最后一个不隐藏
-                    var last = 1;
-                    if (opts.checkCol) {
-                        last = last + 1;
+                $body.on('mouseenter', function () {
+                    $btnBackboardDn.slideUp('fast');
+                });
+
+                $mmGrid.on('mouseleave', function () {
+                    $btnBackboardDn.slideUp('fast');
+                });
+
+                $headWrapper.on('mouseenter', function () {
+                    if ($backboard.is(':hidden') && opts.showBackboard) {
+                        $btnBackboardDn.slideDown('fast');
                     }
-                    if (opts.indexCol) {
-                        last = last + 1;
-                    }
-                    if ($backboard.find('label :checked').length < last) {
-                        this.checked = true;
-                        return;
-                    }
+                });
+                //向上按钮
+                $mmGrid.find('a.mmg-btnBackboardUp').on('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
 
-                    var col = leafCols[index];
-                    if (this.checked) {
-                        col.hidden = false;
-
-                    } else {
-                        col.hidden = true;
-                    }
-
-                    var $ths = $head.find('th');
-                    for (var colIndex = $ths.length - 1; colIndex >= 0; colIndex--) {
-                        var $th = $ths.eq(colIndex);
-                        var iCol = $th.data('col');
-                        if (iCol.cols) {
-                            var hidden = true;
-                            var colspan = 0;
-                            $.each(iCol.cols, function (index, item) {
-                                if (!item.hidden) {
-                                    hidden = false;
-                                    colspan++;
-                                }
-                            });
-
-                            //IE bug
-                            if (colspan !== 0) {
-                                $th.prop('colspan', colspan);
-                            }
-                            iCol.hidden = hidden;
+                    $backboard.slideUp().queue(function (next) {
+                        if (!that.rowsLength() || (that.rowsLength() === 1 && $body.find('tr.emptyRow').length === 1)) {
+                            that._showNoData();
                         }
-                    }
-
-                    that._setColsWidth();
-                    $backboard.height($mmGrid.height() - $headWrapper.outerHeight(true));
-                    if (opts.height !== 'auto') {
-                        $bodyWrapper.height($mmGrid.height() - $headWrapper.outerHeight(true));
-                    }
-
-                    $mmGrid.find('a.mmg-btnBackboardDn').css({
-                        'top': $headWrapper.outerHeight(true)
+                        if (opts.height === 'auto') {
+                            $mmGrid.height('auto');
+                        }
+                        next();
                     });
-                }
-            });
+                });
 
+                //隐藏列
+                $backboard.on('click', 'input:checkbox', function () {
+                    if ($backboard.is(':visible')) {
+                        var index = $backboard.find('label').index($(this).parent());
+                        //最后一个不隐藏
+                        var last = 1;
+                        if (opts.checkCol) {
+                            last = last + 1;
+                        }
+                        if (opts.indexCol) {
+                            last = last + 1;
+                        }
+                        if ($backboard.find('label :checked').length < last) {
+                            this.checked = true;
+                            return;
+                        }
+
+                        var col = leafCols[index];
+                        if (this.checked) {
+                            col.hidden = false;
+
+                        } else {
+                            col.hidden = true;
+                        }
+
+                        var $ths = $head.find('th');
+                        for (var colIndex = $ths.length - 1; colIndex >= 0; colIndex--) {
+                            var $th = $ths.eq(colIndex);
+                            var iCol = $th.data('col');
+                            if (iCol.cols) {
+                                var hidden = true;
+                                var colspan = 0;
+                                $.each(iCol.cols, function (index, item) {
+                                    if (!item.hidden) {
+                                        hidden = false;
+                                        colspan++;
+                                    }
+                                });
+
+                                //IE bug
+                                if (colspan !== 0) {
+                                    $th.prop('colspan', colspan);
+                                }
+                                iCol.hidden = hidden;
+                            }
+                        }
+
+                        that._setColsWidth();
+                        $backboard.height($mmGrid.height() - $headWrapper.outerHeight(true));
+                        if (opts.height !== 'auto') {
+                            $bodyWrapper.height($mmGrid.height() - $headWrapper.outerHeight(true));
+                        }
+
+                        $mmGrid.find('a.mmg-btnBackboardDn').css({
+                            'top': $headWrapper.outerHeight(true)
+                        });
+                    }
+                });
+            }
             //排序事件
             $head.on('click', '.mmg-title', function () {
                 var $this = $(this);
@@ -1399,6 +1400,7 @@
         nowrap: false,
         showBackboard: true,
         backboardMinHeight: 125,
+        showChooseRows: false, //是否显示选择列
         notify: function (content) {
             alert(content);
         },
